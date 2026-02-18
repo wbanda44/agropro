@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroFlow Pro - ZMW Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .tab-content { transition: opacity 0.3s ease; }
+        .hidden { display: none; }
+        /* Custom Logo Font/Style */
+        .logo-icon {
+            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans pb-20">
+
+    <nav class="bg-green-900 text-white p-4 sticky top-0 z-50 shadow-xl border-b border-green-700">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center cursor-pointer" onclick="showTab('cash')">
+                <div class="logo-icon shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter leading-none">AGRO<span class="text-green-400">FLOW</span></h1>
+                    <p class="text-[10px] uppercase tracking-widest text-green-300 font-bold">Solutions Zambia</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex space-x-6 text-sm font-semibold">
+                    <button onclick="showTab('cash')" class="hover:text-green-300 transition">Finance</button>
+                    <button onclick="showTab('inventory')" class="hover:text-green-300 transition">Stock</button>
+                    <button onclick="showTab('log')" class="hover:text-green-300 transition">Journal</button>
+                </div>
+                <div class="flex items-center gap-2 border-l border-green-800 pl-4">
+                    <span id="mode-label" class="text-[9px] font-black bg-white text-green-900 px-2 py-0.5 rounded shadow-sm">ADMIN</span>
+                    <button onclick="toggleStaffMode()" class="bg-green-800 text-white p-1.5 rounded-lg border border-green-700 hover:bg-green-700">
+                        <svg id="lock-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2V7a5 5 0 00-5-5zM7 7a3 3 0 016 0v2H7V7z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-4 mt-6">
+        
+        <section id="cash-tab" class="tab-content">
+            <div class="admin-only mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                        <h3 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Current Balance</h3>
+                        <p id="balance" class="text-3xl font-mono font-black text-stone-800 underline decoration-green-500 decoration-4">ZMW 0.00</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                        <h3 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Return on Investment</h3>
+                        <p id="roi-display" class="text-3xl font-mono font-black text-green-600">0%</p>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-2xl border-2 border-dashed border-green-200 flex items-center justify-center">
+                        <button onclick="exportToCSV()" class="flex items-center gap-2 text-green-800 font-bold hover:scale-105 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            Export Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <span class="w-2 h-6 bg-green-500 rounded-full"></span>
+                        New Transaction (ZMW)
+                    </h3>
+                    <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <input type="text" id="desc" placeholder="Details (e.g. Maize Sale)" class="p-3 bg-stone-50 border rounded-xl focus:ring-2 ring-green-500 outline-none" required>
+                        <input type="number" id="amt" placeholder="Amount" class="p-3 bg-stone-50 border rounded-xl focus:ring-2 ring-green-500 outline-none" required>
+                        <select id="cat" class="p-3 bg-stone-50 border rounded-xl appearance-none">
+                            <option value="sale">Produce Sale (+)</option>
+                            <option value="seeds">Seeds/Input (-)</option>
+                            <option value="labor">Labor/Wages (-)</option>
+                            <option value="logistics">Transport (-)</option>
+                        </select>
+                        <button type="submit" class="bg-green-600 text-white font-black rounded-xl hover:bg-green-700 shadow-md shadow-green-200 transition">Save Record</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="inventory-tab" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                    <h2 class="text-xl font-bold mb-4">Stock Management</h2>
+                    <form id="inv-form" class="space-y-4">
+                        <input type="text" id="i-name" placeholder="Item Name (e.g. Fertilizer)" class="w-full p-3 bg-stone-50 border rounded-xl" required>
+                        <div class="flex gap-4">
+                            <input type="number" id="i-qty" placeholder="Quantity" class="w-1/2 p-3 bg-stone-50 border rounded-xl" required>
+                            <input type="text" id="i-unit" placeholder="Unit (kg/bags)" class="w-1/2 p-3 bg-stone-50 border rounded-xl" required>
+                        </div>
+                        <button type="submit" class="w-full bg-stone-800 text-white py-3 rounded-xl font-bold">Log to Silo</button>
+                    </form>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 admin-only">
+                    <h2 class="text-xl font-bold mb-4">Market Estimator (ZMW)</h2>
+                    <select id="est-select" class="w-full p-3 bg-stone-50 border rounded-xl mb-4"></select>
+                    <input type="number" id="m-price" placeholder="Price per unit (ZMW)" class="w-full p-3 bg-stone-50 border rounded-xl mb-4">
+                    <button onclick="calcMarket()" class="w-full bg-yellow-600 text-white py-3 rounded-xl font-bold hover:bg-yellow-700">Calculate Value</button>
+                    <p id="est-out" class="mt-6 text-center text-2xl font-black text-yellow-900"></p>
+                </div>
+            </div>
+            <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm">
+                <h2 class="font-bold text-stone-400 uppercase text-xs tracking-widest mb-4">Active Stock</h2>
+                <ul id="stock-list" class="divide-y divide-stone-50"></ul>
+            </div>
+        </section>
+
+        <section id="log-tab" class="tab-content hidden">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border-t-8 border-sky-500 mb-8">
+                <h2 class="text-2xl font-bold mb-6">Daily Field Journal</h2>
+                <div class="flex flex-col md:flex-row gap-6">
+                    <select id="w-cond" class="p-4 border rounded-xl bg-sky-50 font-bold">
+                        <option>☀️ Sunny</option>
+                        <option>🌧️ Heavy Rain</option>
+                        <option>☁️ Overcast</option>
+                        <option>💨 High Winds</option>
+                    </select>
+                    <input type="text" id="j-note" placeholder="What's the status of the crops today?" class="flex-1 p-4 border rounded-xl bg-stone-50 outline-none focus:ring-2 ring-sky-400">
+                    <button onclick="saveLog()" class="bg-sky-600 text-white px-10 py-4 rounded-xl font-black shadow-lg shadow-sky-100 hover:bg-sky-700">Log Entry</button>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-stone-50">
+                        <tr>
+                            <th class="p-4 text-xs font-black text-stone-400 uppercase">Date</th>
+                            <th class="p-4 text-xs font-black text-stone-400 uppercase">Condition</th>
+                            <th class="p-4 text-xs font-black text-stone-400 uppercase">Observations</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journal-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="fixed bottom-0 w-full bg-white border-t border-stone-200 flex justify-around items-center p-4 md:hidden z-50">
+        <button onclick="showTab('cash')" class="text-stone-400 hover:text-green-700 flex flex-col items-center">
+            <span class="text-[10px] font-bold">FINANCE</span>
+        </button>
+        <button onclick="showTab('inventory')" class="text-stone-400 hover:text-green-700 flex flex-col items-center">
+            <span class="text-[10px] font-bold">STOCK</span>
+        </button>
+        <button onclick="showTab('log')" class="text-stone-400 hover:text-green-700 flex flex-col items-center">
+            <span class="text-[10px] font-bold">JOURNAL</span>
+        </button>
+    </div>
+
+    <script>
+        // Updated Data State with ZMW
+        let transactions = JSON.parse(localStorage.getItem('agro_trans_zmw')) || [];
+        let inventory = JSON.parse(localStorage.getItem('agro_inv_zmw')) || [];
+        let journal = JSON.parse(localStorage.getItem('agro_log_zmw')) || [];
+        let isAdmin = true;
+
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(id + '-tab').classList.remove('hidden');
+        }
+
+        function toggleStaffMode() {
+            if (isAdmin) {
+                isAdmin = false;
+                applyPerms();
+            } else {
+                if(prompt("Admin Passcode:") === "1234") {
+                    isAdmin = true;
+                    applyPerms();
+                } else {
+                    alert("Unauthorized Access.");
+                }
+            }
+        }
+
+        function applyPerms() {
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdmin));
+            document.getElementById('mode-label').innerText = isAdmin ? "ADMIN" : "STAFF";
+            document.getElementById('mode-label').className = isAdmin ? "text-[9px] font-black bg-white text-green-900 px-2 py-0.5 rounded shadow-sm" : "text-[9px] font-black bg-orange-600 text-white px-2 py-0.5 rounded shadow-sm";
+            if (!isAdmin) showTab('inventory');
+        }
+
+        document.getElementById('transaction-form').onsubmit = (e) => {
+            e.preventDefault();
+            let amount = parseFloat(document.getElementById('amt').value);
+            if (document.getElementById('cat').value !== 'sale') amount = -Math.abs(amount);
+            
+            transactions.push({ id: Date.now(), desc: document.getElementById('desc').value, amount, cat: document.getElementById('cat').value });
+            saveAndRender();
+            e.target.reset();
+        };
+
+        function saveAndRender() {
+            localStorage.setItem('agro_trans_zmw', JSON.stringify(transactions));
+            localStorage.setItem('agro_inv_zmw', JSON.stringify(inventory));
+            localStorage.setItem('agro_log_zmw', JSON.stringify(journal));
+            
+            const income = transactions.filter(t => t.amount > 0).reduce((a, b) => a + b.amount, 0);
+            const expense = Math.abs(transactions.filter(t => t.amount < 0).reduce((a, b) => a + b.amount, 0));
+            const bal = income - expense;
+            const roi = expense > 0 ? ((bal / expense) * 100).toFixed(1) : 0;
+
+            document.getElementById('balance').innerText = `ZMW ${bal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('roi-display').innerText = `${roi}%`;
+            
+            document.getElementById('stock-list').innerHTML = inventory.map((i, idx) => `
+                <li class="py-4 flex justify-between items-center"><span class="font-medium">${i.name}</span> <b class="text-green-800">${i.qty} ${i.unit}</b></li>
+            `).join('');
+
+            document.getElementById('journal-body').innerHTML = journal.slice(0, 15).map(j => `
+                <tr class="border-b hover:bg-stone-50"><td class="p-4 text-stone-500 font-bold text-xs">${j.date}</td><td class="p-4">${j.cond}</td><td class="p-4 italic text-stone-600">"${j.note}"</td></tr>
+            `).join('');
+
+            document.getElementById('est-select').innerHTML = inventory.map((i, idx) => `<option value="${idx}">${i.name}</option>`).join('');
+        }
+
+        document.getElementById('inv-form').onsubmit = (e) => {
+            e.preventDefault();
+            inventory.push({ name: document.getElementById('i-name').value, qty: document.getElementById('i-qty').value, unit: document.getElementById('i-unit').value });
+            saveAndRender();
+            e.target.reset();
+        };
+
+        function calcMarket() {
+            const idx = document.getElementById('est-select').value;
+            const price = document.getElementById('m-price').value;
+            if(!price) return;
+            const total = (inventory[idx].qty * price).toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('est-out').innerText = `Est. Value: ZMW ${total}`;
+        }
+
+        function saveLog() {
+            const note = document.getElementById('j-note').value;
+            if(!note) return;
+            journal.unshift({ date: new Date().toLocaleDateString(), cond: document.getElementById('w-cond').value, note });
+            saveAndRender();
+            document.getElementById('j-note').value = "";
+        }
+
+        function exportToCSV() {
+            let csv = "Date,Description,Amount_ZMW,Category\n";
+            transactions.forEach(t => csv += `${new Date(t.id).toLocaleDateString()},${t.desc},${t.amount},${t.cat}\n`);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'AgroFlow_ZMW_Report_2026.csv');
+            a.click();
+        }
+
+        function clearAllData() {
+            if(confirm("Confirm: Start a new season? This wipes all existing local data.")) {
+                transactions = []; inventory = []; journal = [];
+                saveAndRender();
+            }
+        }
+
+        saveAndRender();
+    </script>
+</body>
+</html>
