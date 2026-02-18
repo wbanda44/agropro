@@ -1,6 +1,6 @@
 # 🌾 AgroFlow Pro (Zambia Edition)
 Smart Cash Flow & Farm Management Suite
-AgroFlow Pro is a lightweight, specialized web application designed for small-scale agro-businesses in Zambia. It combines financial ### tracking, inventory management, and field journaling into a single-file solution that works offline and keeps your data private.
+AgroFlow Pro is a lightweight, specialized web application designed for small-scale agro-businesses in Zambia. It combines financial tracking, inventory management, and field journaling into a single-file solution that works offline and keeps your data private.
 
 # 🚀 Features
 # 💰 Finance & ROI Tracking
