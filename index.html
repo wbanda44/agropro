@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroFlow Pro - Smart Sync 2026</title>
+    <title>AgroFlow Pro - Enterprise 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .tab-content { transition: opacity 0.3s ease; }
         .hidden { display: none; }
-        .logo-gradient { background: linear-gradient(135deg, #16a34a 0%, #064e3b 100%); }
+        .logo-gradient { background: linear-gradient(135deg, #064e3b 0%, #166534 100%); }
     </style>
 </head>
-<body class="bg-stone-100 text-stone-800 font-sans pb-24">
+<body class="bg-stone-100 text-stone-900 font-sans pb-24">
 
     <nav class="bg-green-950 text-white p-4 sticky top-0 z-50 shadow-2xl border-b border-green-800">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center cursor-pointer" onclick="showTab('cash')">
                 <div class="w-10 h-10 logo-gradient rounded-xl flex items-center justify-center mr-3 shadow-lg border border-green-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,18 +24,19 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-black tracking-tighter leading-none uppercase">Agro<span class="text-green-400">Flow</span></h1>
-                    <p class="text-[9px] tracking-[0.3em] text-green-500 font-bold uppercase">Smart Sync Zambia</p>
+                    <p class="text-[9px] tracking-[0.3em] text-green-500 font-bold uppercase">Enterprise Zambia</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <div class="hidden md:flex space-x-6 text-xs font-black uppercase">
+                <div class="hidden md:flex space-x-6 text-[10px] font-black uppercase tracking-widest">
                     <button onclick="showTab('cash')" class="hover:text-green-400">Finance</button>
                     <button onclick="showTab('inventory')" class="hover:text-green-400">Inventory</button>
+                    <button onclick="showTab('vendors')" class="hover:text-green-400">Vendors</button>
                     <button onclick="showTab('log')" class="hover:text-green-400">Journal</button>
                 </div>
                 <div class="flex items-center gap-2 border-l border-green-900 pl-4">
-                    <span id="mode-label" class="text-[9px] font-black bg-white text-green-950 px-2 py-0.5 rounded shadow-sm">ADMIN</span>
+                    <button onclick="switchUser()" id="mode-label" class="text-[9px] font-black bg-white text-green-950 px-3 py-1 rounded shadow-sm hover:bg-green-100 uppercase">Admin</button>
                     <button onclick="toggleStaffMode()" class="bg-green-900 text-white p-2 rounded-lg hover:bg-green-800 transition">
                         <svg id="lock-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2V7a5 5 0 00-5-5zM7 7a3 3 0 016 0v2H7V7z" />
@@ -46,55 +47,55 @@
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto p-4 mt-6">
+    <main class="max-w-7xl mx-auto p-4 mt-6">
         
         <section id="cash-tab" class="tab-content">
             <div class="admin-only">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-200">
-                        <h3 class="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Net Balance</h3>
+                        <h3 class="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Total Balance</h3>
                         <p id="balance" class="text-3xl font-mono font-black text-stone-900">ZMW 0.00</p>
                     </div>
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-stone-200">
                         <h3 class="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Seasonal ROI</h3>
                         <p id="roi-display" class="text-3xl font-mono font-black text-green-600">0%</p>
                     </div>
-                    <div class="bg-green-900 p-6 rounded-3xl shadow-xl flex flex-col justify-center items-center text-white">
-                        <button onclick="exportToCSV()" class="text-xs font-bold uppercase tracking-widest hover:underline">Export Report (CSV)</button>
+                    <div class="bg-stone-900 p-6 rounded-3xl shadow-xl flex flex-col justify-center items-center text-white gap-2">
+                        <button onclick="exportToCSV()" class="text-[10px] font-black uppercase tracking-widest hover:underline text-green-400 italic">Download CSV Data</button>
+                        <button onclick="clearAllData()" class="text-[9px] font-bold text-red-400 uppercase hover:underline">Reset Season Data</button>
                     </div>
                 </div>
 
                 <div class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200 mb-8">
-                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2"><span class="w-2 h-6 bg-green-500 rounded-full"></span> Manual Ledger Entry</h3>
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2"><span class="w-2 h-6 bg-green-500 rounded-full"></span> Ledger Entry</h3>
                     <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <input type="date" id="t-date" class="p-4 bg-stone-50 border rounded-2xl outline-none focus:ring-2 ring-green-500" required>
-                        <input type="text" id="desc" placeholder="Details" class="p-4 bg-stone-50 border rounded-2xl outline-none focus:ring-2 ring-green-500" required>
-                        <input type="number" id="amt" placeholder="Amount" class="p-4 bg-stone-50 border rounded-2xl outline-none focus:ring-2 ring-green-500" required>
-                        <select id="cat" class="p-4 bg-stone-50 border rounded-2xl appearance-none font-bold">
+                        <input type="date" id="t-date" class="p-4 bg-stone-50 border rounded-2xl outline-none" required>
+                        <input type="text" id="desc" placeholder="Details" class="p-4 bg-stone-50 border rounded-2xl outline-none" required>
+                        <input type="number" id="amt" placeholder="ZMW Amount" class="p-4 bg-stone-50 border rounded-2xl outline-none" required>
+                        <select id="cat" class="p-4 bg-stone-50 border rounded-2xl font-bold">
                             <option value="sale">Produce Sale (+)</option>
                             <option value="seeds">Seeds/Input (-)</option>
                             <option value="labor">Labor/Wages (-)</option>
                             <option value="logistics">Transport (-)</option>
                         </select>
-                        <button type="submit" class="bg-green-600 text-white font-black rounded-2xl hover:bg-green-700 shadow-lg transition">Save</button>
+                        <button type="submit" class="bg-green-600 text-white font-black rounded-2xl hover:bg-green-700 shadow-lg">Save Record</button>
                     </form>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
-                        <h3 class="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-4">Expense Distribution</h3>
                         <div style="height: 220px;"><canvas id="expenseChart"></canvas></div>
                     </div>
-                    <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-center">
-                        <h3 class="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Operational Insight</h3>
-                        <p id="insight-text" class="text-stone-600 italic text-sm">Waiting for more data...</p>
+                    <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
+                        <h3 class="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Spending Insight</h3>
+                        <p id="insight-text" class="text-stone-600 italic text-sm">Add transactions to generate reports.</p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-3xl shadow-sm border border-stone-200 overflow-hidden">
                     <table class="w-full text-left">
                         <thead class="bg-stone-50"><tr class="text-[10px] font-black text-stone-400 uppercase border-b">
-                            <th class="p-4">Date</th><th class="p-4">Description</th><th class="p-4">Cat</th><th class="p-4 text-right">ZMW</th><th class="p-4 text-center">Delete</th>
+                            <th class="p-4">Date</th><th class="p-4">User</th><th class="p-4">Item</th><th class="p-4 text-right">ZMW</th><th class="p-4 text-center">X</th>
                         </tr></thead>
                         <tbody id="transaction-history-body" class="text-sm"></tbody>
                     </table>
@@ -105,12 +106,12 @@
         <section id="inventory-tab" class="tab-content hidden">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <div class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200">
-                    <h2 class="text-xl font-black mb-6 flex items-center gap-2"><span class="w-2 h-6 bg-stone-800 rounded-full"></span> Log New Stock</h2>
+                    <h2 class="text-xl font-black mb-6 flex items-center gap-2"><span class="w-2 h-6 bg-stone-800 rounded-full"></span> Inventory Entry</h2>
                     <form id="inv-form" class="space-y-4">
                         <input type="text" id="i-name" placeholder="Item Name" class="w-full p-4 bg-stone-50 border rounded-2xl" required>
                         <div class="flex gap-4">
                             <input type="number" id="i-qty" placeholder="Current Qty" class="w-1/2 p-4 bg-stone-50 border rounded-2xl" required>
-                            <input type="number" id="i-min" placeholder="Alert Level (Min)" class="w-1/2 p-4 bg-stone-50 border rounded-2xl" required>
+                            <input type="number" id="i-min" placeholder="Min. Alert Level" class="w-1/2 p-4 bg-stone-50 border rounded-2xl" required>
                         </div>
                         <div class="flex gap-4">
                             <input type="text" id="i-unit" placeholder="Unit (e.g. Bags)" class="w-1/2 p-4 bg-stone-50 border rounded-2xl" required>
@@ -118,25 +119,42 @@
                                 <option>Main Store</option><option>North Barn</option><option>Cold Storage</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full bg-stone-900 text-white py-4 rounded-2xl font-black">Add to Warehouse</button>
+                        <button type="submit" class="w-full bg-stone-900 text-white py-4 rounded-2xl font-black">Add to Stock</button>
                     </form>
                 </div>
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200 admin-only">
-                    <h2 class="text-xl font-black mb-2 text-yellow-800">Market Estimator</h2>
-                    <p class="text-[10px] text-stone-400 mb-6 uppercase font-black tracking-widest">Valuation for Sales Strategy</p>
-                    <select id="est-select" class="w-full p-4 bg-stone-50 border rounded-2xl mb-4 font-bold"></select>
-                    <input type="number" id="m-price" placeholder="Est. Market Price (ZMW)" class="w-full p-4 bg-stone-50 border rounded-2xl mb-4">
-                    <button onclick="calcMarket()" class="w-full bg-yellow-600 text-white py-4 rounded-2xl font-black">Forecast Total Value</button>
-                    <div id="est-out" class="mt-8 text-center text-4xl font-black text-yellow-900"></div>
+                <div class="bg-green-900 text-white p-8 rounded-3xl shadow-xl flex flex-col justify-center">
+                    <h2 class="text-2xl font-black mb-2 flex items-center gap-2">Harvest Forecast</h2>
+                    <p class="text-[10px] text-green-300 uppercase font-black mb-6 tracking-widest italic">Data-Driven Planning</p>
+                    <div class="space-y-4">
+                        <select id="f-crop" class="w-full p-4 bg-green-800 rounded-2xl outline-none border-none font-bold">
+                            <option value="120">Maize (Approx 120 Days)</option>
+                            <option value="90">Tomatoes (Approx 90 Days)</option>
+                            <option value="60">Cabbage (Approx 60 Days)</option>
+                        </select>
+                        <input type="date" id="f-date" class="w-full p-4 bg-green-800 rounded-2xl outline-none border-none">
+                        <button onclick="calculateForecast()" class="w-full bg-white text-green-900 font-black py-4 rounded-2xl">Calculate Window</button>
+                    </div>
+                    <div id="forecast-result" class="mt-6 p-4 bg-green-800 rounded-2xl text-center hidden"></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-stone-200 overflow-hidden mb-8 admin-only">
+                <div class="p-6">
+                    <h2 class="text-xl font-black mb-2 text-yellow-800 italic tracking-tighter">Market Estimator (ZMW)</h2>
+                    <div class="flex flex-col md:flex-row gap-4 mt-4">
+                        <select id="est-select" class="flex-1 p-4 bg-stone-50 border rounded-2xl font-bold"></select>
+                        <input type="number" id="m-price" placeholder="Price Per Unit" class="flex-1 p-4 bg-stone-50 border rounded-2xl">
+                        <button onclick="calcMarket()" class="bg-yellow-600 text-white px-8 rounded-2xl font-black">Value</button>
+                    </div>
+                    <div id="est-out" class="mt-6 text-3xl font-black text-yellow-900"></div>
                 </div>
             </div>
 
             <div class="bg-white rounded-3xl shadow-sm border border-stone-200 overflow-hidden">
-                <div class="p-4 bg-stone-50 font-black text-[10px] text-stone-400 uppercase tracking-widest border-b">Active Stock & Smart Adjust</div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead><tr class="text-[10px] font-black text-stone-400 uppercase border-b">
-                            <th class="p-4">Item Details</th><th class="p-4 text-center">Status</th><th class="p-4 text-center">Quantity Control</th><th class="p-4 text-center">Delete</th>
+                            <th class="p-4">Item Details</th><th class="p-4 text-center">Status</th><th class="p-4 text-center">Smart Adjust</th><th class="p-4 text-center">X</th>
                         </tr></thead>
                         <tbody id="detailed-stock-list" class="text-sm"></tbody>
                     </table>
@@ -144,21 +162,36 @@
             </div>
         </section>
 
+        <section id="vendors-tab" class="tab-content hidden">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-stone-200 mb-8">
+                <h2 class="text-xl font-black mb-6">Vendor & Buyer Directory</h2>
+                <form id="vendor-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" id="v-name" placeholder="Name/Company" class="p-4 bg-stone-50 border rounded-2xl" required>
+                    <input type="text" id="v-phone" placeholder="Phone Number" class="p-4 bg-stone-50 border rounded-2xl" required>
+                    <select id="v-type" class="p-4 bg-stone-50 border rounded-2xl">
+                        <option>Supplier</option><option>Market Buyer</option><option>Services</option>
+                    </select>
+                    <button type="submit" class="bg-stone-900 text-white font-black rounded-2xl">Save Contact</button>
+                </form>
+            </div>
+            <div id="vendor-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
         <section id="log-tab" class="tab-content hidden">
             <div class="bg-white p-8 rounded-3xl shadow-sm border-t-8 border-sky-600 mb-8">
-                <h2 class="text-2xl font-black mb-6 italic">Daily Field Journal</h2>
+                <h2 class="text-2xl font-black mb-6 italic italic">Field Journal</h2>
                 <div class="flex flex-col md:flex-row gap-4">
                     <select id="w-cond" class="p-4 border rounded-2xl bg-sky-50 font-black">
                         <option>☀️ Sunny</option><option>🌧️ Heavy Rain</option><option>☁️ Overcast</option><option>💨 High Winds</option>
                     </select>
-                    <input type="text" id="j-note" placeholder="Daily field notes..." class="flex-1 p-4 border rounded-2xl bg-stone-50 outline-none">
-                    <button onclick="saveLog()" class="bg-sky-700 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-sky-100 transition">Log Entry</button>
+                    <input type="text" id="j-note" placeholder="What happened today?" class="flex-1 p-4 border rounded-2xl bg-stone-50">
+                    <button onclick="saveLog()" class="bg-sky-700 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-sky-100">Log Entry</button>
                 </div>
             </div>
-            <div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-stone-100">
+            <div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-stone-200">
                 <table class="w-full text-left">
                     <thead class="bg-stone-50 text-[10px] uppercase font-black text-stone-400">
-                        <tr><th class="p-4">Date</th><th class="p-4">Weather</th><th class="p-4">Observation</th></tr>
+                        <tr><th class="p-4">Date</th><th class="p-4">Weather</th><th class="p-4">Observation</th><th class="p-4">User</th></tr>
                     </thead>
                     <tbody id="journal-body"></tbody>
                 </table>
@@ -166,96 +199,116 @@
         </section>
     </main>
 
+    <div class="fixed bottom-0 w-full bg-white border-t flex justify-around p-4 md:hidden shadow-2xl z-50">
+        <button onclick="showTab('cash')" class="text-stone-400 font-black text-[9px] uppercase">Finance</button>
+        <button onclick="showTab('inventory')" class="text-stone-400 font-black text-[9px] uppercase">Stock</button>
+        <button onclick="showTab('vendors')" class="text-stone-400 font-black text-[9px] uppercase">Vendors</button>
+        <button onclick="showTab('log')" class="text-stone-400 font-black text-[9px] uppercase">Journal</button>
+    </div>
+
     <script>
-        let transactions = JSON.parse(localStorage.getItem('agro_trans_smart')) || [];
-        let inventory = JSON.parse(localStorage.getItem('agro_inv_smart')) || [];
-        let journal = JSON.parse(localStorage.getItem('agro_log_smart')) || [];
+        let transactions = JSON.parse(localStorage.getItem('at_trans')) || [];
+        let inventory = JSON.parse(localStorage.getItem('at_inv')) || [];
+        let journal = JSON.parse(localStorage.getItem('at_log')) || [];
+        let vendors = JSON.parse(localStorage.getItem('at_ven')) || [];
+        let currentUser = localStorage.getItem('at_user') || "Admin";
         let isAdmin = true;
         let expenseChart;
 
-        document.getElementById('t-date').valueAsDate = new Date();
+        document.getElementById('mode-label').innerText = currentUser;
 
         function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.getElementById(id + '-tab').classList.remove('hidden');
         }
 
+        function switchUser() {
+            const name = prompt("Enter Name:", currentUser);
+            if (name) { currentUser = name; localStorage.setItem('at_user', name); saveAndRender(); }
+        }
+
         function toggleStaffMode() {
             if (isAdmin) { isAdmin = false; applyPerms(); }
-            else { if(prompt("Passcode:") === "1234") { isAdmin = true; applyPerms(); } }
+            else { if(prompt("Code:") === "1234") { isAdmin = true; applyPerms(); } }
         }
 
         function applyPerms() {
             document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdmin));
-            document.getElementById('mode-label').innerText = isAdmin ? "ADMIN" : "STAFF";
+            document.getElementById('mode-label').innerText = isAdmin ? currentUser : "STAFF MODE";
             if (!isAdmin) showTab('inventory');
         }
 
+        // Logic
         document.getElementById('transaction-form').onsubmit = (e) => {
             e.preventDefault();
             let amount = parseFloat(document.getElementById('amt').value);
             if (document.getElementById('cat').value !== 'sale') amount = -Math.abs(amount);
-            transactions.push({ id: Date.now(), date: document.getElementById('t-date').value, desc: document.getElementById('desc').value, amount, cat: document.getElementById('cat').value });
+            transactions.push({ id: Date.now(), date: document.getElementById('t-date').value, desc: document.getElementById('desc').value, amount, cat: document.getElementById('cat').value, user: currentUser });
             saveAndRender(); e.target.reset();
-            document.getElementById('t-date').valueAsDate = new Date();
         };
 
         function saveAndRender() {
-            localStorage.setItem('agro_trans_smart', JSON.stringify(transactions));
-            localStorage.setItem('agro_inv_smart', JSON.stringify(inventory));
-            localStorage.setItem('agro_log_smart', JSON.stringify(journal));
+            localStorage.setItem('at_trans', JSON.stringify(transactions));
+            localStorage.setItem('at_inv', JSON.stringify(inventory));
+            localStorage.setItem('at_log', JSON.stringify(journal));
+            localStorage.setItem('at_ven', JSON.stringify(vendors));
             
             const inc = transactions.filter(t => t.amount > 0).reduce((a, b) => a + b.amount, 0);
             const exp = Math.abs(transactions.filter(t => t.amount < 0).reduce((a, b) => a + b.amount, 0));
             const bal = inc - exp;
-            const roi = exp > 0 ? ((bal / exp) * 100).toFixed(1) : 0;
-
             document.getElementById('balance').innerText = `ZMW ${bal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('roi-display').innerText = `${roi}%`;
-            
-            // Render Finance Ledger
+            document.getElementById('roi-display').innerText = `${exp > 0 ? ((bal/exp)*100).toFixed(1) : 0}%`;
+            document.getElementById('mode-label').innerText = currentUser;
+
+            // Finance
             document.getElementById('transaction-history-body').innerHTML = [...transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t => `
-                <tr class="border-b border-stone-50 hover:bg-stone-50"><td class="p-4 font-mono text-[10px]">${t.date}</td>
-                <td class="p-4 font-bold text-stone-700">${t.desc}</td><td class="p-4 text-[10px] uppercase font-black text-stone-300">${t.cat}</td>
+                <tr class="border-b border-stone-50"><td class="p-4 font-mono text-[10px] text-stone-400">${t.date}</td>
+                <td class="p-4 text-[10px] font-black italic uppercase">${t.user || 'Admin'}</td><td class="p-4 font-bold text-stone-700">${t.desc}</td>
                 <td class="p-4 text-right font-mono font-black ${t.amount >= 0 ? 'text-green-600' : 'text-red-500'}">${t.amount >= 0 ? '+' : ''}${t.amount.toLocaleString()}</td>
                 <td class="p-4 text-center"><button onclick="deleteTrans(${t.id})" class="text-stone-300 hover:text-red-500">✕</button></td></tr>
             `).join('');
 
-            // Render Inventory Ledger (Detailed with Smart Sync)
+            // Stock
             document.getElementById('detailed-stock-list').innerHTML = inventory.map(item => {
                 const isLow = item.qty <= item.min;
-                return `<tr class="border-b border-stone-100 hover:bg-stone-50 transition">
-                    <td class="p-4"><div class="font-black text-stone-800">${item.name}</div><div class="text-[9px] text-stone-400 font-bold uppercase tracking-widest">${item.loc}</div></td>
-                    <td class="p-4 text-center">${isLow ? '<span class="px-2 py-0.5 bg-red-100 text-red-700 text-[9px] font-black rounded border border-red-200">LOW</span>' : '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-[9px] font-black rounded border border-green-200">OK</span>'}</td>
-                    <td class="p-4"><div class="flex items-center justify-center gap-4">
+                return `<tr class="border-b border-stone-100"><td class="p-4"><div class="font-black text-stone-800 uppercase text-xs">${item.name}</div><div class="text-[9px] text-stone-400 font-bold uppercase">${item.loc}</div></td>
+                    <td class="p-4 text-center">${isLow ? '<span class="px-2 py-0.5 bg-red-100 text-red-700 text-[9px] font-black rounded">LOW</span>' : '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-[9px] font-black rounded">OK</span>'}</td>
+                    <td class="p-4"><div class="flex items-center justify-center gap-3">
                         <button onclick="adjustStock(${item.id}, -1)" class="w-8 h-8 rounded-lg bg-stone-100 font-bold hover:bg-red-500 hover:text-white transition shadow-sm">-</button>
-                        <div class="text-center min-w-[70px]"><div class="font-mono font-black text-lg ${isLow ? 'text-red-600' : 'text-stone-900'}">${item.qty}</div><div class="text-[9px] font-black text-stone-400 uppercase">${item.unit}</div></div>
+                        <div class="text-center min-w-[60px]"><div class="font-mono font-black text-lg ${isLow ? 'text-red-600' : 'text-stone-900'}">${item.qty}</div><div class="text-[9px] font-black text-stone-400 uppercase">${item.unit}</div></div>
                         <button onclick="adjustStock(${item.id}, 1)" class="w-8 h-8 rounded-lg bg-stone-100 font-bold hover:bg-green-600 hover:text-white transition shadow-sm">+</button>
                     </div></td>
-                    <td class="p-4 text-center"><button onclick="deleteStock(${item.id})" class="text-stone-200 hover:text-red-400">✕</button></td>
-                </tr>`;
+                    <td class="p-4 text-center"><button onclick="deleteStock(${item.id})" class="text-stone-200 hover:text-red-400">✕</button></td></tr>`;
             }).join('');
 
+            // Vendors
+            document.getElementById('vendor-list').innerHTML = vendors.map(v => `
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
+                    <p class="text-[9px] font-black text-stone-400 uppercase tracking-widest mb-1">${v.type}</p>
+                    <h3 class="text-lg font-black text-stone-800 tracking-tight">${v.name}</h3>
+                    <div class="mt-4 flex gap-2">
+                        <a href="https://wa.me/${v.phone}" target="_blank" class="bg-green-100 text-green-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase">WhatsApp</a>
+                        <button onclick="deleteVendor(${v.id})" class="text-stone-300 text-[10px] uppercase font-black px-2 hover:text-red-500">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+
             document.getElementById('journal-body').innerHTML = journal.slice(0, 10).map(j => `
-                <tr class="border-b"><td class="p-4 font-bold text-xs">${j.date}</td><td class="p-4">${j.cond}</td><td class="p-4 italic text-stone-500">"${j.note}"</td></tr>
+                <tr class="border-b"><td class="p-4 font-bold text-[10px] text-stone-400">${j.date}</td><td class="p-4 text-xs font-bold">${j.cond}</td><td class="p-4 italic text-stone-600 text-xs">"${j.note}"</td><td class="p-4 text-[9px] font-black uppercase">${j.user}</td></tr>
             `).join('');
 
             document.getElementById('est-select').innerHTML = inventory.map((i, idx) => `<option value="${idx}">${i.name}</option>`).join('');
             updateChart();
         }
 
-        // SMART SYNC: Adjust Stock & Ask for Sale
         function adjustStock(id, amount) {
             const item = inventory.find(i => i.id === id);
             if (!item || (item.qty + amount < 0)) return;
-
             if (amount < 0 && isAdmin) {
-                const isSale = confirm(`Log ZMW Sale for ${item.name}?`);
-                if (isSale) {
-                    const price = prompt("Sale Price per " + item.unit + ":", "0");
-                    if (price && !isNaN(price)) {
-                        transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], desc: `Sale: ${item.name}`, amount: parseFloat(price) * Math.abs(amount), cat: 'sale' });
-                    }
+                const sale = confirm(`Log Sale for ${item.name}?`);
+                if (sale) {
+                    const price = prompt("Price per unit (ZMW):", "0");
+                    if (price) transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], desc: `Sale: ${item.name}`, amount: parseFloat(price) * Math.abs(amount), cat: 'sale', user: currentUser });
                 }
             }
             item.qty = parseFloat((item.qty + amount).toFixed(2));
@@ -268,58 +321,38 @@
             transactions.forEach(t => { if(t.amount < 0) { let c = (t.cat==='sale'?'other':t.cat); if(cats[c]!==undefined) cats[c]+=Math.abs(t.amount); } });
             const data = [cats.seeds, cats.labor, cats.logistics, cats.other];
             if (expenseChart) expenseChart.destroy();
-            expenseChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: { labels: ['Seeds', 'Labor', 'Logistics', 'Other'], datasets: [{ data, backgroundColor: ['#16a34a', '#ca8a04', '#2563eb', '#78716c'], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { weight: 'bold', size: 10 } } } }, cutout: '75%' }
-            });
-            const total = data.reduce((a,b)=>a+b,0);
-            if(total > 0) {
-                const names = ['Seeds', 'Labor', 'Logistics', 'Other'];
-                const max = data.indexOf(Math.max(...data));
-                document.getElementById('insight-text').innerText = `Highest cost: ${names[max]} (${((data[max]/total)*100).toFixed(1)}%).`;
-            }
+            expenseChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Inputs', 'Labor', 'Logistics', 'Other'], datasets: [{ data, backgroundColor: ['#16a34a', '#ca8a04', '#2563eb', '#78716c'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { weight: 'bold', size: 10 } } } }, cutout: '75%' } });
         }
 
-        function deleteTrans(id) { if(confirm("Delete record?")) { transactions = transactions.filter(t => t.id !== id); saveAndRender(); } }
-        function deleteStock(id) { if(confirm("Delete item?")) { inventory = inventory.filter(i => i.id !== id); saveAndRender(); } }
+        function calculateForecast() {
+            const days = parseInt(document.getElementById('f-crop').value);
+            const pDate = new Date(document.getElementById('f-date').value);
+            if (!pDate.getTime()) return;
+            pDate.setDate(pDate.getDate() + days);
+            const res = document.getElementById('forecast-result');
+            res.classList.remove('hidden');
+            res.innerHTML = `<p class="text-xs uppercase font-black text-green-300 italic mb-1">Target Window</p><p class="text-xl font-black">${pDate.toDateString()}</p>`;
+        }
 
-        document.getElementById('inv-form').onsubmit = (e) => {
+        document.getElementById('vendor-form').onsubmit = (e) => {
             e.preventDefault();
-            inventory.push({ 
-                id: Date.now(), 
-                name: document.getElementById('i-name').value, 
-                qty: parseFloat(document.getElementById('i-qty').value), 
-                min: parseFloat(document.getElementById('i-min').value), 
-                unit: document.getElementById('i-unit').value, 
-                loc: document.getElementById('i-loc').value 
-            });
+            vendors.push({ id: Date.now(), name: document.getElementById('v-name').value, phone: document.getElementById('v-phone').value, type: document.getElementById('v-type').value });
             saveAndRender(); e.target.reset();
         };
 
-        function calcMarket() {
-            const idx = document.getElementById('est-select').value;
-            const price = document.getElementById('m-price').value;
-            if(!price || !inventory[idx]) return;
-            document.getElementById('est-out').innerText = `ZMW ${(inventory[idx].qty * price).toLocaleString()}`;
-        }
+        document.getElementById('inv-form').onsubmit = (e) => {
+            e.preventDefault();
+            inventory.push({ id: Date.now(), name: document.getElementById('i-name').value, qty: parseFloat(document.getElementById('i-qty').value), min: parseFloat(document.getElementById('i-min').value), unit: document.getElementById('i-unit').value, loc: document.getElementById('i-loc').value });
+            saveAndRender(); e.target.reset();
+        };
 
-        function saveLog() {
-            const note = document.getElementById('j-note').value;
-            if(!note) return;
-            journal.unshift({ date: new Date().toLocaleDateString(), cond: document.getElementById('w-cond').value, note });
-            saveAndRender(); document.getElementById('j-note').value = "";
-        }
-
-        function exportToCSV() {
-            let csv = "Date,Desc,Amount,Cat\n";
-            transactions.forEach(t => csv += `${t.date},${t.desc},${t.amount},${t.cat}\n`);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = window.URL.createObjectURL(blob);
-            a.download = 'AgroFlow_Sync_2026.csv';
-            a.click();
-        }
+        function deleteTrans(id) { if(confirm("Delete?")) { transactions = transactions.filter(t => t.id !== id); saveAndRender(); } }
+        function deleteStock(id) { if(confirm("Delete?")) { inventory = inventory.filter(i => i.id !== id); saveAndRender(); } }
+        function deleteVendor(id) { if(confirm("Delete?")) { vendors = vendors.filter(v => v.id !== id); saveAndRender(); } }
+        function saveLog() { const note = document.getElementById('j-note').value; if(!note) return; journal.unshift({ date: new Date().toLocaleDateString(), cond: document.getElementById('w-cond').value, note, user: currentUser }); saveAndRender(); document.getElementById('j-note').value = ""; }
+        function calcMarket() { const idx = document.getElementById('est-select').value; const price = document.getElementById('m-price').value; if(!price || !inventory[idx]) return; document.getElementById('est-out').innerText = `ZMW ${(inventory[idx].qty * price).toLocaleString()}`; }
+        function exportToCSV() { let csv = "Date,User,Desc,Amount,Cat\n"; transactions.forEach(t => csv += `${t.date},${t.user},${t.desc},${t.amount},${t.cat}\n`); const blob = new Blob([csv], { type: 'text/csv' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = 'AgroFlow_Ent_2026.csv'; a.click(); }
+        function clearAllData() { if(confirm("Confirm: Wipe all season data?")) { transactions = []; inventory = []; journal = []; vendors = []; saveAndRender(); } }
 
         saveAndRender();
     </script>
